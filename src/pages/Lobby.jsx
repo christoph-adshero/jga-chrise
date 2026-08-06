@@ -11,7 +11,10 @@ import { loadLocal } from '../lib/storage'
 
 export default function Lobby({ session, players, me }) {
   const local = loadLocal()
-  const shareUrl = `${window.location.origin}/play/${session.id}`
+  // BASE_URL nicht vergessen – die App liegt auf GitHub Pages unter einem
+  // Unterpfad (/jga-chrise/). Ohne ihn zeigt der geteilte Link ins Leere.
+  const base = `${window.location.origin}${import.meta.env.BASE_URL}`.replace(/\/$/, '')
+  const shareUrl = `${base}/play/${session.id}`
   const readyCount = players.filter((p) => p.is_ready).length
   const groom = players.find((p) => p.is_groom)
   const hasAvatar = me.avatar && Object.keys(me.avatar).length > 0

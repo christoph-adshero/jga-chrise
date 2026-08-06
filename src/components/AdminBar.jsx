@@ -8,6 +8,7 @@ import {
   DISCIPLINES, CONTEXTS, disciplineFits, getDiscipline
 } from '../lib/gameData'
 import { drawChallenger, drawDiscipline } from '../lib/duelLogic'
+import DisciplineBoard from './DisciplineBoard.jsx'
 
 // ============================================================
 //  Organisator-Steuerung direkt in der Spieleransicht.
@@ -193,6 +194,10 @@ export default function AdminBar({ session, players, config }) {
           🏆 Finale
         </button>
       </div>
+
+      {/* Spiel selbst aussuchen – nötig für Padel, praktisch für alles andere */}
+      <DisciplineBoard history={state.history} context={context}
+                       onPick={(id) => openDuel(drawChallenger(crew, state.history)?.id, id)} />
     </Wrap>
   )
 }

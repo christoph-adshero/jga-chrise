@@ -5,6 +5,7 @@ import Scoreboard from '../../components/Scoreboard.jsx'
 import Avatar from '../../components/Avatar.jsx'
 import PlayerCard from '../../components/PlayerCard.jsx'
 import AdminBar from '../../components/AdminBar.jsx'
+import DisciplineBoard from '../../components/DisciplineBoard.jsx'
 import Confetti from '../../components/Confetti.jsx'
 import { sounds } from '../../lib/sounds'
 import EmojiReactions from '../../components/EmojiReactions.jsx'
@@ -63,6 +64,8 @@ function Interlude({ session, players, me, groom, state, config }) {
         {state.jokers && <JokerStatus jokers={state.jokers} />}
       </div>
       <AdminBar session={session} players={players} config={config} />
+      {/* Der Organisator hat die Übersicht schon in seiner Leiste (dort antippbar) */}
+      {!local.isAdmin && <DisciplineBoard history={state.history} context={state.context} />}
       <Scoreboard players={players} history={state.history} />
       <EmojiReactions sessionId={session.id} />
     </Layout>
@@ -193,7 +196,7 @@ function DuelView({ session, players, me, groom, state, config }) {
       )}
 
       {duel.phase === 'live' && (
-        <LivePhase session={session} me={me} groom={groom} duel={duel} disc={disc}
+        <LivePhase session={session} me={me} groom={groom} challenger={challenger} duel={duel} disc={disc}
                    answers={answers} votes={votes} isDuelist={isDuelist} spectators={spectators} />
       )}
 
@@ -386,7 +389,7 @@ function players_name(session, bet, challenger, groom) {
 }
 
 // --- Live-Phase ---
-function LivePhase({ session, me, groom, duel, disc, answers, votes, isDuelist, spectators }) {
+function LivePhase({ session, me, groom, challenger, duel, disc, answers, votes, isDuelist, spectators }) {
   const myAnswer = answers.find((a) => a.player_id === me.id)
   const myVote = votes.find((v) => v.value && v.player_id === me.id)
   const challengerId = duel.challengerId
@@ -435,14 +438,25 @@ function LivePhase({ session, me, groom, duel, disc, answers, votes, isDuelist, 
               <p className="text-mint text-center font-semibold">Gevotet ✓ ({votes.length}/{spectators.length})</p>
             ) : (
               <div className="grid grid-cols-2 gap-2">
-                <button className="btn-ghost" onClick={() => castVote(session.id, me.id, 'vote', duel.n, challengerId)}>Herausforderer 💪</button>
-                <button className="btn-gold" onClick={() => castVote(session.id, me.id, 'vote', duel.n, groom.id)}>Bräutigam 👑</button>
+                <button className="btn-ghost" onClick={() => castVote(session.id, me.id, 'vote', duel.n, challengerId)}>💪 {challenger?.name}</button>
+                <button className="btn-gold" onClick={() => castVote(session.id, me.id, 'vote', duel.n, groom.id)}>👑 {groom.name}</button>
               </div>
             )}
-            <p className="text-white/30 text-xs text-center">Mehrheit entscheidet automatisch. Gleichstand → Organisator.</p>
+            <p className="text-white/30 text-xs text-center">
+              Mehrheit entscheidet automatisch ({votes.length}/{spectators.length} gevotet).
+              Gleichstand oder keiner tippt → der Organisator entscheidet.
+            </p>
           </div>
         )}
-        {isDuelist && <div className="card p-4 text-center text-white/70">⚔️ Kämpft! Die Zuschauer werten euch danach.</div>}
+        {isDuelist && (
+          <div className="card p-4 text-center space-y-1">
+            <p className="text-white/70">⚔️ Kämpft! Ihr wertet nicht selbst.</p>
+            <p className="text-white/35 text-sm">
+              Danach tippen die {spectators.length} Zuschauer auf ihren Handys, wer gewonnen hat
+              ({votes.length}/{spectators.length}).
+            </p>
+          </div>
+        )}
       </div>
     )
   }

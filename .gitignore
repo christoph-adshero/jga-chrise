@@ -1,0 +1,20 @@
+node_modules
+dist
+.env
+.env.local
+.DS_Store
+*.log
+.vercel
+.netlify
+
+# Privat – gehört NICHT ins öffentliche Repo
+# (echte Fotos, Roh-Renderings, Generierungs-Skripte, Plan mit Wohnungsadresse)
+avatars/fotos/
+avatars/out/
+avatars/*.sh
+PLAN.md
+.supabase-db-password.txt
+
+# Plan-Inhalt: liegt NICHT im öffentlichen Repo (kommt per VITE_PLAN in den Build)
+plan.local.js
+supabase/.temp/

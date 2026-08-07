@@ -5,10 +5,6 @@
 
 export const GROOM = '[BRÄUTIGAM]'
 
-// ---------- DISZIPLINEN für die Duell-Arena ----------
-// kind: phone  = Mini-Game läuft auf beiden Handys (auto-Auswertung)
-//       real   = reale Aufgabe, Organisator wertet
-//       crowd  = Zuschauer voten den Sieger
 // ---------- „Damals & Heute": Fotos des Bräutigams ----------
 // Die Bilder liegen NICHT im Repo, sondern im öffentlichen Supabase-Bucket
 // „chrise". Solange weniger als 3 Fotos hinterlegt sind, taucht die Disziplin
@@ -16,25 +12,31 @@ export const GROOM = '[BRÄUTIGAM]'
 // tragen das VERSAND-Datum, nicht das Aufnahmedatum.
 const PHOTO_BASE = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/chrise`
 
+// FOTOS-START – wird von `npm run fotos` neu geschrieben, nicht von Hand ändern
 export const GROOM_PHOTOS = [
-  { file: '2017a.jpg', year: 2017 },
-  { file: '2017b.jpg', year: 2017 },
-  { file: '2019.jpg',  year: 2019 },
-  { file: '2020.jpg',  year: 2020 },
-  { file: '2021.jpg',  year: 2021 },
-  { file: '2022.jpg',  year: 2022 },
-  { file: '2023.jpg',  year: 2023 }
+  { file: '2017a.jpg',  year: 2017 },
+  { file: '2017b.jpg',  year: 2017 },
+  { file: '2019.jpg',   year: 2019 },
+  { file: '2020.jpg',   year: 2020 },
+  { file: '2021.jpg',   year: 2021 },
+  { file: '2022.jpg',   year: 2022 },
+  { file: '2023.jpg',   year: 2023 }
 ].map((p) => ({ ...p, url: `${PHOTO_BASE}/${p.file}` }))
 
 // Spannweite des Jahres-Reglers – bewusst weiter als die Fotos, sonst
 // verrät der Regler schon, in welchem Zeitraum die Lösung liegt.
 export const PHOTO_YEAR_RANGE = { from: 2008, to: 2026 }
+// FOTOS-ENDE
 
 // Handicap: Der Bräutigam kennt seine eigenen Fotos und trifft sie exakt.
 // Der Herausforderer gewinnt, wenn er bei JEDEM Foto höchstens ein Jahr
 // danebenliegt – Gleichstand geht deshalb an ihn, nicht an den Bräutigam.
 export const PHOTO_TOLERANCE = { challenger: 1, groom: 0 }
 
+// ---------- DISZIPLINEN für die Duell-Arena ----------
+// kind: phone  = Mini-Game läuft auf beiden Handys (auto-Auswertung)
+//       real   = reale Aufgabe, Zuschauer werten
+//       crowd  = Zuschauer voten den Sieger
 const ALL_DISCIPLINES = [
   {
     id: 'reaction',

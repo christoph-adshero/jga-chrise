@@ -21,11 +21,12 @@ import StroopDuel from '../../components/minigames/StroopDuel.jsx'
 import TypingDuel from '../../components/minigames/TypingDuel.jsx'
 import MathDuel from '../../components/minigames/MathDuel.jsx'
 import AimDuel from '../../components/minigames/AimDuel.jsx'
+import PhotoYearDuel from '../../components/minigames/PhotoYearDuel.jsx'
 import { useAnswers } from '../../hooks/useSession.js'
 import { useWakeLock } from '../../hooks/useWakeLock.js'
 import { loadLocal } from '../../lib/storage'
 import { getDiscipline, POINTS, BET_STAKES, JOKERS } from '../../lib/gameData'
-import { computeDuelWinner, computeEstimateWinner, crewMeter, statsFromHistory, majorityWinner } from '../../lib/duelLogic'
+import { computeDuelWinner, computeEstimateWinner, computePhotoYearWinner, crewMeter, statsFromHistory, majorityWinner } from '../../lib/duelLogic'
 import {
   submitAnswer, placeBet, castVote,
   resolveDuelRpc, resolveTaskRpc, setDuelState, appendHistory
@@ -147,8 +148,9 @@ function DuelView({ session, players, me, groom, state, config }) {
     const b = answers.find((x) => x.player_id === duel.challengerId)
     if (!a || !b || !mayResolve) return
     resolvingRef.current = true
-    const result = duel.discipline === 'estimate'
-      ? computeEstimateWinner(duel.id, a, b)
+    const result =
+      duel.discipline === 'estimate'  ? computeEstimateWinner(duel.id, a, b)
+      : duel.discipline === 'photoyear' ? computePhotoYearWinner(duel.id, a, b, groom.id)
       : computeDuelWinner(duel.discipline, a, b)
     if (result) {
       resolveDuelRpc(session.id, duel.id, result.winnerId, result.detail)
@@ -443,6 +445,7 @@ function LivePhase({ session, me, groom, challenger, duel, disc, answers, votes,
       case 'typing':   return <TypingDuel {...props} />
       case 'math':     return <MathDuel {...props} seconds={disc.seconds} />
       case 'aim':      return <AimDuel {...props} />
+      case 'photoyear': return <PhotoYearDuel {...props} />
       default:         return null
     }
   }

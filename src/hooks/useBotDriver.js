@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { submitAnswer, placeBet, castVote, resolveDuelRpc } from '../lib/api'
-import { estimatesFor, computeDuelWinner, computeEstimateWinner, majorityWinner } from '../lib/duelLogic'
+import { estimatesFor, photosFor, computeDuelWinner, computeEstimateWinner, computePhotoYearWinner, majorityWinner } from '../lib/duelLogic'
 import { BET_STAKES, getDiscipline } from '../lib/gameData'
 import { useAnswers } from './useSession.js'
 
@@ -31,6 +31,11 @@ function botResult(discipline, duelId) {
       const qs = estimatesFor(duelId)
       return { value: JSON.stringify(qs.map((q) => Math.round(q.answer * (0.4 + Math.random() * 1.2)))) }
     }
+    case 'photoyear': {
+      // Jahre grob daneben raten
+      const ps = photosFor(duelId)
+      return { value: JSON.stringify(ps.map((p) => p.year + rnd(-6, 6))) }
+    }
     default: return { value: String(rnd(1, 50)) }
   }
 }
@@ -56,8 +61,9 @@ export function useBotDriver(session, players, enabled = true) {
       const a = answers.find((x) => x.player_id === groom?.id)
       const b = answers.find((x) => x.player_id === duel.challengerId)
       if (!a || !b) return
-      const res = duel.discipline === 'estimate'
-        ? computeEstimateWinner(duel.id, a, b)
+      const res =
+        duel.discipline === 'estimate'  ? computeEstimateWinner(duel.id, a, b)
+        : duel.discipline === 'photoyear' ? computePhotoYearWinner(duel.id, a, b, groom?.id)
         : computeDuelWinner(duel.discipline, a, b)
       if (!res) return
       winnerId = res.winnerId; detail = res.detail

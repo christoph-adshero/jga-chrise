@@ -9,7 +9,20 @@ export const GROOM = '[BRÄUTIGAM]'
 // kind: phone  = Mini-Game läuft auf beiden Handys (auto-Auswertung)
 //       real   = reale Aufgabe, Organisator wertet
 //       crowd  = Zuschauer voten den Sieger
-export const DISCIPLINES = [
+// ---------- „Damals & Heute": Fotos des Bräutigams ----------
+// Die Bilder liegen NICHT im Repo, sondern in einem Supabase-Storage-Bucket.
+// Solange weniger als 3 Fotos hinterlegt sind, taucht die Disziplin nirgends auf.
+// Format: { url: '…', year: 2007, note: 'optionaler Hinweis fürs Ergebnis' }
+export const GROOM_PHOTOS = []
+
+// Spannweite des Jahres-Reglers – muss alle Fotos abdecken
+export const PHOTO_YEAR_RANGE = { from: 1988, to: 2026 }
+
+// Handicap: Der Bräutigam kennt seine eigenen Fotos, deshalb muss er
+// aufs Jahr genau treffen – der Herausforderer darf zwei danebenliegen.
+export const PHOTO_TOLERANCE = { challenger: 2, groom: 0 }
+
+const ALL_DISCIPLINES = [
   {
     id: 'reaction',
     kind: 'phone',
@@ -142,8 +155,21 @@ export const DISCIPLINES = [
     icon: '🤩',
     name: 'Promi-Foto',
     desc: 'Wer ergattert das bessere Foto mit einer Berühmtheit – oder mit jemandem, der aussieht wie einer? Doppelgänger zählen! Die Crew votet das Siegerfoto.'
+  },
+  {
+    id: 'photoyear',
+    kind: 'phone',
+    icon: '📷',
+    name: 'Damals & Heute',
+    desc: 'Drei alte Fotos vom Bräutigam – in welchem Jahr sind sie entstanden? Handicap: Der Herausforderer punktet schon, wenn er zwei Jahre danebenliegt. Der Bräutigam muss sein eigenes Foto aufs Jahr genau treffen.'
   }
 ]
+
+// Ohne hinterlegte Fotos gibt es „Damals & Heute" nicht – sonst stünde
+// die Disziplin in der Auslosung und liefe ins Leere.
+export const DISCIPLINES = ALL_DISCIPLINES.filter(
+  (d) => d.id !== 'photoyear' || GROOM_PHOTOS.length >= 3
+)
 
 export function getDiscipline(id) {
   return DISCIPLINES.find((d) => d.id === id)

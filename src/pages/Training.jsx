@@ -16,7 +16,8 @@ import { DISCIPLINES } from '../lib/gameData'
 import { loadLocal } from '../lib/storage'
 
 // Trainings-Modus: alle Handy-Minigames offline üben – ohne Session, ohne Supabase.
-const GAMES = DISCIPLINES.filter((d) => d.kind === 'phone')
+// „Damals & Heute" bleibt draußen: Üben hieße hier, die Fotos vorab zu sehen.
+const GAMES = DISCIPLINES.filter((d) => d.kind === 'phone' && d.id !== 'photoyear')
 
 export default function Training() {
   const [active, setActive] = useState(null)

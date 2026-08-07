@@ -1,4 +1,7 @@
-import { seedFrom, DUEL_QUIZ, ESTIMATE_QUESTIONS, STROOP_COLORS, TYPING_PHRASES } from './gameData'
+import {
+  seedFrom, DUEL_QUIZ, ESTIMATE_QUESTIONS, STROOP_COLORS, TYPING_PHRASES,
+  GROOM_PHOTOS, PHOTO_TOLERANCE
+} from './gameData'
 
 // Deterministischer RNG (mulberry32) – gleiche Fragen auf beiden Handys
 export function rng(seed) {
@@ -41,6 +44,7 @@ export function stroopSequenceFor(duelId, count = 60) {
 }
 
 export const typingPhraseFor = (duelId) => seededPick(`t-${duelId}`, TYPING_PHRASES, 1)[0]
+export const photosFor = (duelId) => seededPick(`f-${duelId}`, GROOM_PHOTOS, 3)
 
 // Kopfrechnen: gemischte Aufgaben, gleiche Reihenfolge auf beiden Handys
 export function mathProblemsFor(duelId, count = 40) {
@@ -123,9 +127,52 @@ export function computeDuelWinner(discipline, a, b) {
     }
     case 'estimate':
       return null // braucht die duelId → computeEstimateWinner nutzen
+    case 'photoyear':
+      return null // braucht duelId + wer der Bräutigam ist → computePhotoYearWinner
     default:
       return null
   }
+}
+
+// „Damals & Heute": ungleiche Toleranzen, weil der Bräutigam seine eigenen
+// Fotos kennt – er muss aufs Jahr genau treffen, der Herausforderer darf zwei
+// danebenliegen. WICHTIG: Auch der Gleichstand wird über die Abweichung NACH
+// Abzug der Toleranz entschieden. Sonst gewinnt der Bräutigam jeden Gleichstand
+// allein dadurch, dass er seine Jahre exakt kennt – das Handicap wäre wertlos.
+export function computePhotoYearWinner(duelId, a, b, groomId) {
+  const photos = photosFor(duelId)
+  const guesses = (x) => JSON.parse(x.value || '[]')
+  const ga = guesses(a)
+  const gb = guesses(b)
+  const tol = (x) => (x.player_id === groomId ? PHOTO_TOLERANCE.groom : PHOTO_TOLERANCE.challenger)
+
+  // Abweichung, die über die eigene Toleranz hinausgeht (0 = Treffer)
+  const over = (guess, year, t) => Math.max(0, Math.min(Math.abs((guess ?? -9999) - year), 999) - t)
+
+  let hitA = 0, hitB = 0, offA = 0, offB = 0
+  photos.forEach((p, i) => {
+    const oa = over(ga[i], p.year, tol(a))
+    const ob = over(gb[i], p.year, tol(b))
+    offA += oa
+    offB += ob
+    if (oa === 0) hitA++
+    if (ob === 0) hitB++
+  })
+
+  const first = new Date(a.created_at) <= new Date(b.created_at) ? a : b
+  if (hitA !== hitB) {
+    return {
+      winnerId: hitA > hitB ? a.player_id : b.player_id,
+      detail: `Treffer ${hitA}:${hitB} – der Bräutigam braucht das exakte Jahr`
+    }
+  }
+  if (offA !== offB) {
+    return {
+      winnerId: offA < offB ? a.player_id : b.player_id,
+      detail: `${hitA}:${hitB} Treffer – knapper dran (${Math.min(offA, offB)} statt ${Math.max(offA, offB)} Jahre über der Toleranz)`
+    }
+  }
+  return tie(first, `${hitA}:${hitB} und gleich nah dran – Zeitvorteil entscheidet`)
 }
 
 export function computeEstimateWinner(duelId, a, b) {

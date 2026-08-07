@@ -4,6 +4,7 @@ import Play from './pages/Play.jsx'
 import Admin from './pages/Admin.jsx'
 import Plan from './pages/Plan.jsx'
 import Rules from './pages/Rules.jsx'
+import UpdateBanner from './components/UpdateBanner.jsx'
 import { supabaseConfigured } from './lib/supabase'
 
 function ConfigBanner() {
@@ -18,6 +19,7 @@ function ConfigBanner() {
 export default function App() {
   return (
     <>
+      <UpdateBanner />
       <ConfigBanner />
       <Routes>
         <Route path="/" element={<Home />} />

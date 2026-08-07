@@ -223,21 +223,15 @@ export const ESTIMATE_QUESTIONS = [
 ]
 
 // ---------- BRÄUTIGAM-GLÜCKSRAD: Zusatzaufgaben ----------
-// successPts: Punkte für den Bräutigam bei Erfolg
-// failPts:    Punkte für JEDEN Herausforderer bei Scheitern
+// Jede geschaffte Aufgabe bringt POINTS.taskSuccess – bewusst für alle gleich.
 export const BACHELOR_TASKS = [
-  { icon: '🍹', task: 'Lass dir von einem/einer Fremden einen Drink ausgeben (oder zumindest anstoßen).', successPts: 80, failPts: 40 },
-  { icon: '🎶', task: 'Bring eine fremde Gruppe dazu, mit dir anzustoßen und "Prost auf den Bräutigam!" zu rufen.', successPts: 80, failPts: 40 },
-  { icon: '🗣️', task: 'Sprich die nächsten 10 Minuten NUR in Reimen. 3 Verstöße = gescheitert.', successPts: 80, failPts: 40 },
-  { icon: '💪', task: '10 Liegestütze mitten in der Bar – mit Publikums-Applaus danach.', successPts: 60, failPts: 30 },
-  { icon: '🧢', task: 'Tausche für 30 Minuten ein Kleidungsstück mit einem Teammitglied.', successPts: 60, failPts: 30 },
-  { icon: '🇬🇧', task: 'Bestell die nächste Runde komplett auf Englisch – mit dem schlechtesten Akzent, den du drauf hast.', successPts: 60, failPts: 30 },
-  { icon: '📸', task: 'Überrede einen Fremden mit Bart zu einem Gruppenfoto.', successPts: 70, failPts: 35 },
-  { icon: '💃', task: 'Fordere jemanden (freundlich!) zu einem 30-Sekunden-Tanz-Battle heraus.', successPts: 90, failPts: 45 },
-  { icon: '🎤', task: 'Halte eine 60-Sekunden-Lobrede auf deine Verlobte – auf einem Stuhl stehend.', successPts: 70, failPts: 35 },
-  { icon: '🕵️', task: 'Finde heraus: Vorname + Sternzeichen eines Fremden – nur durch Smalltalk.', successPts: 70, failPts: 35 },
-  { icon: '🍋', task: 'Iss eine Zitronenscheibe ohne das Gesicht zu verziehen.', successPts: 50, failPts: 25 },
-  { icon: '📞', task: 'Ruf deine Verlobte an und sing ihr 30 Sekunden ein Ständchen – auf Lautsprecher.', successPts: 90, failPts: 45 }
+  { icon: '🍹', task: 'Lass dir von einem/einer Fremden einen Drink ausgeben (oder zumindest anstoßen).' },
+  { icon: '🎶', task: 'Bring eine fremde Gruppe dazu, mit dir anzustoßen und "Prost auf den Bräutigam!" zu rufen.' },
+  { icon: '🇬🇧', task: 'Bestell die nächste Runde komplett auf Englisch – mit dem schlechtesten Akzent, den du drauf hast.' },
+  { icon: '🎤', task: 'Halte eine 60-Sekunden-Lobrede auf deine Verlobte – auf einem Stuhl stehend.' },
+  { icon: '🕵️', task: 'Finde heraus: Vorname + Sternzeichen eines Fremden – nur durch Smalltalk.' },
+  { icon: '🍋', task: 'Iss eine Zitronenscheibe ohne das Gesicht zu verziehen.' },
+  { icon: '📞', task: 'Ruf deine Verlobte an und sing ihr 30 Sekunden ein Ständchen – auf Lautsprecher.' }
 ]
 
 // ---------- Punktesystem (rebalanced nach Design-Review) ----------

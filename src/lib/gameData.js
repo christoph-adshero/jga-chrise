@@ -10,17 +10,30 @@ export const GROOM = '[BRÄUTIGAM]'
 //       real   = reale Aufgabe, Organisator wertet
 //       crowd  = Zuschauer voten den Sieger
 // ---------- „Damals & Heute": Fotos des Bräutigams ----------
-// Die Bilder liegen NICHT im Repo, sondern in einem Supabase-Storage-Bucket.
-// Solange weniger als 3 Fotos hinterlegt sind, taucht die Disziplin nirgends auf.
-// Format: { url: '…', year: 2007, note: 'optionaler Hinweis fürs Ergebnis' }
-export const GROOM_PHOTOS = []
+// Die Bilder liegen NICHT im Repo, sondern im öffentlichen Supabase-Bucket
+// „chrise". Solange weniger als 3 Fotos hinterlegt sind, taucht die Disziplin
+// nirgends auf. Nur Fotos mit belastbarem Jahr aufnehmen – WhatsApp-Dateinamen
+// tragen das VERSAND-Datum, nicht das Aufnahmedatum.
+const PHOTO_BASE = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/chrise`
 
-// Spannweite des Jahres-Reglers – muss alle Fotos abdecken
-export const PHOTO_YEAR_RANGE = { from: 1988, to: 2026 }
+export const GROOM_PHOTOS = [
+  { file: '2017a.jpg', year: 2017 },
+  { file: '2017b.jpg', year: 2017 },
+  { file: '2019.jpg',  year: 2019 },
+  { file: '2020.jpg',  year: 2020 },
+  { file: '2021.jpg',  year: 2021 },
+  { file: '2022.jpg',  year: 2022 },
+  { file: '2023.jpg',  year: 2023 }
+].map((p) => ({ ...p, url: `${PHOTO_BASE}/${p.file}` }))
 
-// Handicap: Der Bräutigam kennt seine eigenen Fotos, deshalb muss er
-// aufs Jahr genau treffen – der Herausforderer darf zwei danebenliegen.
-export const PHOTO_TOLERANCE = { challenger: 2, groom: 0 }
+// Spannweite des Jahres-Reglers – bewusst weiter als die Fotos, sonst
+// verrät der Regler schon, in welchem Zeitraum die Lösung liegt.
+export const PHOTO_YEAR_RANGE = { from: 2008, to: 2026 }
+
+// Handicap: Der Bräutigam kennt seine eigenen Fotos und trifft sie exakt.
+// Der Herausforderer gewinnt, wenn er bei JEDEM Foto höchstens ein Jahr
+// danebenliegt – Gleichstand geht deshalb an ihn, nicht an den Bräutigam.
+export const PHOTO_TOLERANCE = { challenger: 1, groom: 0 }
 
 const ALL_DISCIPLINES = [
   {
@@ -161,7 +174,7 @@ const ALL_DISCIPLINES = [
     kind: 'phone',
     icon: '📷',
     name: 'Damals & Heute',
-    desc: 'Drei alte Fotos vom Bräutigam – in welchem Jahr sind sie entstanden? Handicap: Der Herausforderer punktet schon, wenn er zwei Jahre danebenliegt. Der Bräutigam muss sein eigenes Foto aufs Jahr genau treffen.'
+    desc: 'Drei alte Fotos vom Bräutigam – in welchem Jahr sind sie entstanden? Handicap: Der Bräutigam muss sein eigenes Foto aufs Jahr GENAU treffen, der Herausforderer darf ein Jahr danebenliegen. Bei Gleichstand gewinnt der Herausforderer.'
   }
 ]
 

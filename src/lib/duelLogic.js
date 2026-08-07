@@ -159,20 +159,28 @@ export function computePhotoYearWinner(duelId, a, b, groomId) {
     if (ob === 0) hitB++
   })
 
-  const first = new Date(a.created_at) <= new Date(b.created_at) ? a : b
+  // Ergebnistext IMMER nach Rolle beschriften – „2:0" allein ist nicht lesbar,
+  // weil die Reihenfolge von den Datenzeilen kommt, nicht von den Spielern.
+  const groomIsA = a.player_id === groomId
+  const hitGroom = groomIsA ? hitA : hitB
+  const hitChall = groomIsA ? hitB : hitA
+  const stand = `Herausforderer ${hitChall}× richtig (±1 erlaubt), Bräutigam ${hitGroom}× (nur exakt)`
+
   if (hitA !== hitB) {
-    return {
-      winnerId: hitA > hitB ? a.player_id : b.player_id,
-      detail: `Treffer ${hitA}:${hitB} – der Bräutigam braucht das exakte Jahr`
-    }
+    return { winnerId: hitA > hitB ? a.player_id : b.player_id, detail: stand }
   }
   if (offA !== offB) {
     return {
       winnerId: offA < offB ? a.player_id : b.player_id,
-      detail: `${hitA}:${hitB} Treffer – knapper dran (${Math.min(offA, offB)} statt ${Math.max(offA, offB)} Jahre über der Toleranz)`
+      detail: `${stand} – näher dran gewinnt`
     }
   }
-  return tie(first, `${hitA}:${hitB} und gleich nah dran – Zeitvorteil entscheidet`)
+  // Gleichstand geht an den Herausforderer: Der Bräutigam kennt seine eigenen
+  // Fotos, ein Remis ist für ihn also geschenkt. Zeitvorteil wäre hier unfair.
+  return {
+    winnerId: (groomIsA ? b : a).player_id,
+    detail: `${stand} – Gleichstand geht an den Herausforderer`
+  }
 }
 
 export function computeEstimateWinner(duelId, a, b) {

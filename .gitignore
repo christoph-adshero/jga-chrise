@@ -18,3 +18,6 @@ PLAN.md
 # Plan-Inhalt: liegt NICHT im öffentlichen Repo (kommt per VITE_PLAN in den Build)
 plan.local.js
 supabase/.temp/
+
+# Supabase service-role key (nur lokal, niemals commiten)
+.supabase-service-key.txt

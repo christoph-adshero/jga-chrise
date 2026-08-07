@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Home from './pages/Home.jsx'
 import Play from './pages/Play.jsx'
 import Admin from './pages/Admin.jsx'
-import Training from './pages/Training.jsx'
 import Plan from './pages/Plan.jsx'
 import Rules from './pages/Rules.jsx'
 import { supabaseConfigured } from './lib/supabase'
@@ -24,7 +23,6 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/play/:sessionId" element={<Play />} />
         <Route path="/admin/:sessionId" element={<Admin />} />
-        <Route path="/training" element={<Training />} />
         <Route path="/plan" element={<Plan />} />
         <Route path="/regeln" element={<Rules />} />
         <Route path="*" element={<Navigate to="/" replace />} />

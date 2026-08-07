@@ -95,10 +95,9 @@ export default function Home() {
         Kein Login nötig. Dein Name bleibt auf diesem Handy gespeichert.
       </p>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid gap-2">
         <Link to="/regeln" className="btn-ghost">📖 Spielregeln</Link>
-        <Link to="/training" className="btn-ghost">🏋️ Üben</Link>
-        <Link to="/plan" className="btn-gold col-span-2">🗺️ Der Plan</Link>
+        <Link to="/plan" className="btn-gold">🗺️ Der Plan</Link>
       </div>
     </Layout>
   )

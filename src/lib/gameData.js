@@ -14,6 +14,11 @@ const PHOTO_BASE = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/publi
 
 // FOTOS-START – wird von `npm run fotos` neu geschrieben, nicht von Hand ändern
 export const GROOM_PHOTOS = [
+  { file: '2002.jpg',   year: 2002 },
+  { file: '2014.jpg',   year: 2014 },
+  { file: '2014b.jpg',  year: 2014 },
+  { file: '2015.jpg',   year: 2015 },
+  { file: '2015b.jpg',  year: 2015 },
   { file: '2017a.jpg',  year: 2017 },
   { file: '2017b.jpg',  year: 2017 },
   { file: '2019.jpg',   year: 2019 },
@@ -25,7 +30,7 @@ export const GROOM_PHOTOS = [
 
 // Spannweite des Jahres-Reglers – bewusst weiter als die Fotos, sonst
 // verrät der Regler schon, in welchem Zeitraum die Lösung liegt.
-export const PHOTO_YEAR_RANGE = { from: 2008, to: 2026 }
+export const PHOTO_YEAR_RANGE = { from: 1999, to: 2026 }
 // FOTOS-ENDE
 
 // Handicap: Der Bräutigam kennt seine eigenen Fotos und trifft sie exakt.

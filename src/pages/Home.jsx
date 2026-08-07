@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import Layout from '../components/Layout.jsx'
 import { createSession, getSessionByCode, joinSession } from '../lib/api'
-import { saveLocal } from '../lib/storage'
+import { saveLocal, loadLocal } from '../lib/storage'
 import { supabaseConfigured } from '../lib/supabase'
 
 export default function Home() {
@@ -11,6 +11,8 @@ export default function Home() {
   const [code, setCode] = useState('')
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
+  // Wer schon in einer Runde ist, soll nicht wieder Code und Namen tippen müssen
+  const running = loadLocal()
 
   const handleJoin = async () => {
     setErr('')
@@ -48,6 +50,12 @@ export default function Home() {
 
   return (
     <Layout subtitle="8.–9. August 2026" title="JGA Chrise 🍻">
+      {running.sessionId && running.playerId && (
+        <Link to={`/play/${running.sessionId}`} className="btn-primary w-full text-lg">
+          ▶️ Zurück in die Runde{running.name ? ` – ${running.name}` : ''}
+        </Link>
+      )}
+
       <div className="card p-5 text-center">
         <div className="text-6xl mb-2">🥊👑🍺</div>
         <p className="text-white/70">
@@ -88,8 +96,9 @@ export default function Home() {
       </p>
 
       <div className="grid grid-cols-2 gap-2">
-        <Link to="/plan" className="btn-gold">🗺️ Der Plan</Link>
+        <Link to="/regeln" className="btn-ghost">📖 Spielregeln</Link>
         <Link to="/training" className="btn-ghost">🏋️ Üben</Link>
+        <Link to="/plan" className="btn-gold col-span-2">🗺️ Der Plan</Link>
       </div>
     </Layout>
   )

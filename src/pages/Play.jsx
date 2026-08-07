@@ -59,6 +59,7 @@ export default function Play() {
       <div className="card p-6 text-center text-white/60">
         ⏸ Pause – der Organisator startet gleich das nächste Duell.
       </div>
+      <Link to="/regeln" className="btn-ghost w-full">📖 Regeln nachlesen</Link>
       {!me.is_groom && (
         <Link to="/plan" className="btn-gold w-full">🗺️ Wo müssen wir als Nächstes hin?</Link>
       )}

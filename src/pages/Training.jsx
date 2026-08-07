@@ -13,6 +13,7 @@ import TypingDuel from '../components/minigames/TypingDuel.jsx'
 import MathDuel from '../components/minigames/MathDuel.jsx'
 import AimDuel from '../components/minigames/AimDuel.jsx'
 import { DISCIPLINES } from '../lib/gameData'
+import { loadLocal } from '../lib/storage'
 
 // Trainings-Modus: alle Handy-Minigames offline üben – ohne Session, ohne Supabase.
 const GAMES = DISCIPLINES.filter((d) => d.kind === 'phone')
@@ -21,6 +22,7 @@ export default function Training() {
   const [active, setActive] = useState(null)
   const [result, setResult] = useState(null)
   const [runId, setRunId] = useState(0)
+  const back = loadLocal().sessionId ? `/play/${loadLocal().sessionId}` : '/'
 
   const start = (id) => { setActive(id); setResult(null); setRunId((r) => r + 1) }
   const onFinish = ({ value, responseMs }) => setResult(responseMs != null ? `Ø ${responseMs} ms` : value)
@@ -29,7 +31,7 @@ export default function Training() {
 
   return (
     <Layout subtitle="Offline-Übungsmodus" title="Training 🏋️"
-            right={<Link to="/" className="chip bg-panel2 text-white/60 border border-line">← Start</Link>}>
+            right={<Link to={back} className="chip bg-panel2 text-white/60 border border-line">← Zum Spiel</Link>}>
       {!active && (
         <>
           <div className="card p-4 text-center text-white/60 text-sm">

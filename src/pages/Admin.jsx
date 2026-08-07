@@ -98,6 +98,11 @@ function AdminPanel({ session, players }) {
           <button className="btn-primary col-span-2" onClick={() => set({ status: 'playing', current_game: 'duell' })}>🥊 Schlag den Bräutigam</button>
           <button className="btn-gold col-span-2" onClick={() => set({ status: 'finished' })}>🏛️ Endstand & Urteil</button>
         </div>
+        <p className="text-white/35 text-xs">
+          Endstand erst ganz zum Schluss – nach dem Finale. Er beendet den Abend und zeigt
+          Sieger, MVP und Abrechnung. Ihr kommt jederzeit hierher zurück und könnt
+          weiterspielen, es geht also nichts kaputt.
+        </p>
       </div>
 
       {/* Arena-Steuerung */}

@@ -49,6 +49,18 @@ export const sounds = {
       tone(262, 0.4, 0.45, 'sine', 0.1)
     } catch {}
   },
+  // Auslosung: einzelner Klick, während die Avatare durchrattern
+  tick() {
+    try { tone(1200, 0, 0.03, 'square', 0.05) } catch {}
+  },
+  // Auslosung steht: aufsteigender Treffer
+  lock() {
+    try {
+      tone(392, 0, 0.09, 'square', 0.09)
+      tone(587, 0.09, 0.09, 'square', 0.09)
+      tone(880, 0.18, 0.28, 'triangle', 0.11)
+    } catch {}
+  },
   // Bier: kurzes „Pling-Gluck"
   beer() {
     try {

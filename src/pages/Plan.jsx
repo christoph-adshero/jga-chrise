@@ -18,6 +18,8 @@ export default function Plan() {
   const [pin, setPin] = useState('')
   const [pinErr, setPinErr] = useState('')
   const active = DAYS.find((d) => d.id === day)
+  // Zurück in die laufende Runde statt auf die Startseite
+  const back = loadLocal().sessionId ? `/play/${loadLocal().sessionId}` : '/'
 
   // Zuerst SPERREN, dann prüfen: Wer den Link bekommt, sieht ohne Crew-Code nichts.
   useEffect(() => {
@@ -49,7 +51,7 @@ export default function Plan() {
   if (!planLoaded) {
     return (
       <Layout title="Plan"
-              right={<Link to="/" className="chip bg-panel2 text-white/60 border border-line">← Start</Link>}>
+              right={<Link to={back} className="chip bg-panel2 text-white/60 border border-line">← Zum Spiel</Link>}>
         <div className="card p-6 text-center text-white/50">
           Kein Plan im Build enthalten (VITE_PLAN fehlt). <code>npm run plan</code> ausführen.
         </div>
@@ -64,7 +66,7 @@ export default function Plan() {
   if (gate === 'groom') {
     return (
       <Layout subtitle="Zutritt verweigert" title="Netter Versuch 😏"
-              right={<Link to="/" className="chip bg-panel2 text-white/60 border border-line">← Start</Link>}>
+              right={<Link to={back} className="chip bg-panel2 text-white/60 border border-line">← Zum Spiel</Link>}>
         <div className="card p-8 text-center space-y-3">
           <div className="text-6xl">🔒👑</div>
           <p className="text-lg font-bold">Nicht für dich, {groomName}.</p>
@@ -74,7 +76,7 @@ export default function Plan() {
           </p>
           <p className="text-white/30 text-xs">Schön probiert. Wir sehen sowas. 🕵️</p>
         </div>
-        <Link to="/" className="btn-primary w-full">Zurück zum Spiel</Link>
+        <Link to={back} className="btn-primary w-full">Zurück zum Spiel</Link>
       </Layout>
     )
   }
@@ -82,7 +84,7 @@ export default function Plan() {
   if (gate === 'locked') {
     return (
       <Layout subtitle="Nur für die Crew" title="🔒 Gesperrt"
-              right={<Link to="/" className="chip bg-panel2 text-white/60 border border-line">← Start</Link>}>
+              right={<Link to={back} className="chip bg-panel2 text-white/60 border border-line">← Zum Spiel</Link>}>
         <div className="card p-6 text-center space-y-4">
           <div className="text-6xl">🤫</div>
           <p className="text-white/70 text-sm">
@@ -97,14 +99,14 @@ export default function Plan() {
           {pinErr && <p className="text-brand text-sm">{pinErr}</p>}
           <button className="btn-primary w-full" onClick={tryPin}>Aufsperren</button>
         </div>
-        <Link to="/" className="btn-ghost w-full">Zurück</Link>
+        <Link to={back} className="btn-ghost w-full">Zurück</Link>
       </Layout>
     )
   }
 
   return (
     <Layout subtitle="8.–9. August 2026" title="Der Plan 🗺️"
-            right={<Link to="/" className="chip bg-panel2 text-white/60 border border-line">← Start</Link>}>
+            right={<Link to={back} className="chip bg-panel2 text-white/60 border border-line">← Zum Spiel</Link>}>
 
       {/* Basislager – für Taxi & Orientierung immer griffbereit */}
       <a href={BASECAMP.maps} target="_blank" rel="noreferrer"

@@ -82,6 +82,8 @@ export default function Lobby({ session, players, me }) {
         {me.is_ready ? 'Doch noch nicht bereit' : '✅ Ich bin bereit!'}
       </button>
 
+      <Link to="/regeln" className="btn-ghost w-full">📖 So läuft's – Regeln, Punkte, wer trinkt</Link>
+
       {/* Der Bräutigam bekommt den Plan nicht zu sehen */}
       {!me.is_groom && (
         <Link to="/plan" className="btn-gold w-full">🗺️ Plan, Adressen & Uhrzeiten</Link>

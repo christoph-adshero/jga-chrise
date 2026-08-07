@@ -6,6 +6,7 @@ import Avatar from '../../components/Avatar.jsx'
 import PlayerCard from '../../components/PlayerCard.jsx'
 import AdminBar from '../../components/AdminBar.jsx'
 import DisciplineBoard from '../../components/DisciplineBoard.jsx'
+import DrawReveal from '../../components/DrawReveal.jsx'
 import Confetti from '../../components/Confetti.jsx'
 import { sounds } from '../../lib/sounds'
 import EmojiReactions from '../../components/EmojiReactions.jsx'
@@ -115,6 +116,16 @@ function DuelView({ session, players, me, groom, state, config }) {
   const votes = allVotes.filter((v) => spectatorIds.has(v.player_id)) // DQ'te zählen nicht
   const resolvingRef = useRef(false)
   const [tick, setTick] = useState(0)
+
+  // Auslosungs-Show: läuft je Duell einmal, bevor gewettet wird.
+  // Nach einem Veto wird nur die Disziplin neu gezogen – dann keine Show.
+  const [drawing, setDrawing] = useState(duel.phase === 'bet' && !duel.veto)
+  const shownDraw = useRef(duel.id)
+  useEffect(() => {
+    if (shownDraw.current === duel.id) return
+    shownDraw.current = duel.id
+    setDrawing(duel.phase === 'bet' && !duel.veto)
+  }, [duel.id, duel.phase, duel.veto])
   // Auswerten darf jeder Duellant – und zusätzlich der Organisator.
   // Sonst bliebe ein Duell hängen, wenn beide Duellanten Bots sind (Test-Modus)
   // oder ein Duellant offline geht. Der RPC-Guard verhindert Doppelwertung.
@@ -158,6 +169,18 @@ function DuelView({ session, players, me, groom, state, config }) {
       .catch(() => {})
       .finally(() => { resolvingRef.current = false })
   }, [votes.length, duel, disc, spectators.length, session.id, tick])
+
+  // Solange die Auslosung läuft, bleibt alles andere verdeckt –
+  // sonst steht der Name schon in der Überschrift, bevor das Rad steht.
+  if (drawing) {
+    const crew = players.filter((p) => p.id !== groom.id && p.active !== false)
+    return (
+      <Layout subtitle="Duell-Arena" title="Auslosung 🎲">
+        <DrawReveal crew={crew} challenger={challenger} groom={groom}
+                    onDone={() => setDrawing(false)} />
+      </Layout>
+    )
+  }
 
   return (
     <Layout subtitle={`Duell${duel.finale ? ' · FINALE 🏆' : ''} · ${disc?.icon} ${disc?.name}`}

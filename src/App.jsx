@@ -4,6 +4,7 @@ import Play from './pages/Play.jsx'
 import Admin from './pages/Admin.jsx'
 import Training from './pages/Training.jsx'
 import Plan from './pages/Plan.jsx'
+import Rules from './pages/Rules.jsx'
 import { supabaseConfigured } from './lib/supabase'
 
 function ConfigBanner() {
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/admin/:sessionId" element={<Admin />} />
         <Route path="/training" element={<Training />} />
         <Route path="/plan" element={<Plan />} />
+        <Route path="/regeln" element={<Rules />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

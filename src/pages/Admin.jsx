@@ -131,7 +131,14 @@ function AdminPanel({ session, players, refresh }) {
 
       {/* Spieler */}
       <div className="card p-4">
-        <h3 className="h-display text-xl mb-2">Spieler verwalten</h3>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="h-display text-xl">Spieler verwalten</h3>
+          <button className="chip bg-mint/20 text-mint"
+                  onClick={() => players.filter((p) => !p.is_ready)
+                    .forEach((p) => updatePlayer(p.id, { is_ready: true }))}>
+            ✅ Alle bereit
+          </button>
+        </div>
         <ul className="space-y-2">
           {players.map((p) => {
             // Wer gerade im laufenden Duell steht, darf nicht verschwinden –
@@ -156,10 +163,15 @@ function AdminPanel({ session, players, refresh }) {
 
             return (
               <li key={p.id} className="flex items-center justify-between bg-panel2 rounded-xl px-3 py-2">
-                <span className={`flex items-center gap-2 font-semibold ${p.active === false ? 'line-through opacity-50' : ''}`}>
+                {/* Punkt antippen = für ihn „bereit" melden, falls einer nicht
+                    an sein Handy geht oder gar keins dabeihat */}
+                <button className={`flex items-center gap-2 font-semibold text-left ${p.active === false ? 'line-through opacity-50' : ''}`}
+                        title={p.is_ready ? 'Bereit – antippen zum Zurücknehmen' : 'Für ihn „bereit" melden'}
+                        onClick={() => updatePlayer(p.id, { is_ready: !p.is_ready })}>
                   <Avatar avatar={p.avatar} crown={p.is_groom} size={28} />
+                  <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${p.is_ready ? 'bg-mint' : 'bg-white/20'}`} />
                   {p.name} <span className="text-white/40 font-normal">({p.score})</span>
-                </span>
+                </button>
                 <span className="flex items-center gap-1">
                   <button className="chip bg-panel border border-line" onClick={() => addPoints(p.id, -25)}>−25</button>
                   <button className="chip bg-panel border border-line" onClick={() => addPoints(p.id, 25)}>+25</button>
@@ -181,8 +193,9 @@ function AdminPanel({ session, players, refresh }) {
           })}
         </ul>
         <p className="text-white/35 text-xs mt-2">
-          🗑 löscht endgültig – für Doppelanmeldungen. Wer nur zwischendurch raus ist
-          (Klo, Taxi), bekommt DQ und kann zurückgeholt werden.
+          Namen antippen meldet ihn bereit (grüner Punkt) – praktisch, wenn einer
+          nicht ans Handy geht. 🗑 löscht endgültig, für Doppelanmeldungen.
+          Wer nur kurz weg ist (Klo, Taxi), bekommt DQ und kann zurückgeholt werden.
         </p>
       </div>
 

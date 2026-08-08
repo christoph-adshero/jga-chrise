@@ -125,6 +125,14 @@ export async function updatePlayer(id, patch) {
   if (error) throw error
 }
 
+// Spieler endgültig entfernen (z.B. Doppelanmeldung).
+// Seine Antworten und Wetten hängen per ON DELETE CASCADE dran und gehen mit.
+export async function deletePlayer(id) {
+  ensure()
+  const { error } = await supabase.from('players').delete().eq('id', id)
+  if (error) throw error
+}
+
 export async function setGroom(sessionId, playerId) {
   ensure()
   await supabase.from('players').update({ is_groom: false }).eq('session_id', sessionId)

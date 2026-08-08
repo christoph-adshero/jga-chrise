@@ -5,7 +5,7 @@ import Scoreboard from '../components/Scoreboard.jsx'
 import Avatar from '../components/Avatar.jsx'
 import { useSession, useAnswers } from '../hooks/useSession.js'
 import {
-  updateSession, updatePlayer, addPoints, setDuelState, appendHistory,
+  updateSession, updatePlayer, deletePlayer, addPoints, setDuelState, appendHistory,
   resolveDuelRpc, resolveTaskRpc, addTestPlayers, removeTestPlayers
 } from '../lib/api'
 import { useBotDriver } from '../hooks/useBotDriver.js'
@@ -17,7 +17,7 @@ const uid = () => `${Date.now()}-${Math.floor(Math.random() * 1e6)}`
 
 export default function Admin() {
   const { sessionId } = useParams()
-  const { session, players } = useSession(sessionId)
+  const { session, players, refresh } = useSession(sessionId)
   const [pin, setPin] = useState('')
   const [authed, setAuthed] = useState(false)
 
@@ -40,10 +40,10 @@ export default function Admin() {
     )
   }
 
-  return <AdminPanel session={session} players={players} />
+  return <AdminPanel session={session} players={players} refresh={refresh} />
 }
 
-function AdminPanel({ session, players }) {
+function AdminPanel({ session, players, refresh }) {
   const state = session.state || {}
   const config = withGroomName(session.config || defaultConfig, session.config?.groomName)
   const groom = players.find((p) => p.is_groom)
@@ -133,28 +133,57 @@ function AdminPanel({ session, players }) {
       <div className="card p-4">
         <h3 className="h-display text-xl mb-2">Spieler verwalten</h3>
         <ul className="space-y-2">
-          {players.map((p) => (
-            <li key={p.id} className="flex items-center justify-between bg-panel2 rounded-xl px-3 py-2">
-              <span className={`flex items-center gap-2 font-semibold ${p.active === false ? 'line-through opacity-50' : ''}`}>
-                <Avatar avatar={p.avatar} crown={p.is_groom} size={28} />
-                {p.name} <span className="text-white/40 font-normal">({p.score})</span>
-              </span>
-              <span className="flex items-center gap-1">
-                <button className="chip bg-panel border border-line" onClick={() => addPoints(p.id, -25)}>−25</button>
-                <button className="chip bg-panel border border-line" onClick={() => addPoints(p.id, 25)}>+25</button>
-                <button className="chip bg-gold/20 text-gold" title="Cartoon-Avatar-URL setzen"
-                  onClick={() => {
-                    const url = window.prompt(`Cartoon-Avatar-URL für ${p.name} (leer = entfernen):`, p.avatar?.imageUrl || '')
-                    if (url === null) return
-                    updatePlayer(p.id, { avatar: { ...(p.avatar || {}), imageUrl: url.trim() || undefined } })
-                  }}>🏎️</button>
-                <button className="chip bg-brand/20 text-brand" onClick={() => updatePlayer(p.id, { active: p.active === false })}>
-                  {p.active === false ? 'Zurück' : 'DQ'}
-                </button>
-              </span>
-            </li>
-          ))}
+          {players.map((p) => {
+            // Wer gerade im laufenden Duell steht, darf nicht verschwinden –
+            // sonst hängt das Duell ohne Gegner fest.
+            const imDuell = state.duel && !state.duel.winner &&
+              (p.id === state.duel.challengerId || p.is_groom)
+            const gespielt = (state.history || []).some(
+              (h) => h.challengerId === p.id || h.winner === p.id)
+
+            const entfernen = () => {
+              const warnung = gespielt
+                ? `\n\nACHTUNG: ${p.name} hat schon gespielt. Seine Duelle bleiben in der Historie stehen, seine Punkte sind weg.`
+                : ''
+              if (!window.confirm(`${p.name} endgültig aus der Runde entfernen?${warnung}`)) return
+              // Supabase liefert bei DELETE nur den Primärschlüssel, der
+              // session_id-Filter im Realtime-Kanal greift dann nicht –
+              // also selbst nachladen statt aufs Event zu warten.
+              deletePlayer(p.id)
+                .then(() => refresh?.())
+                .catch((e) => window.alert(`Hat nicht geklappt: ${e.message}`))
+            }
+
+            return (
+              <li key={p.id} className="flex items-center justify-between bg-panel2 rounded-xl px-3 py-2">
+                <span className={`flex items-center gap-2 font-semibold ${p.active === false ? 'line-through opacity-50' : ''}`}>
+                  <Avatar avatar={p.avatar} crown={p.is_groom} size={28} />
+                  {p.name} <span className="text-white/40 font-normal">({p.score})</span>
+                </span>
+                <span className="flex items-center gap-1">
+                  <button className="chip bg-panel border border-line" onClick={() => addPoints(p.id, -25)}>−25</button>
+                  <button className="chip bg-panel border border-line" onClick={() => addPoints(p.id, 25)}>+25</button>
+                  <button className="chip bg-gold/20 text-gold" title="Cartoon-Avatar-URL setzen"
+                    onClick={() => {
+                      const url = window.prompt(`Cartoon-Avatar-URL für ${p.name} (leer = entfernen):`, p.avatar?.imageUrl || '')
+                      if (url === null) return
+                      updatePlayer(p.id, { avatar: { ...(p.avatar || {}), imageUrl: url.trim() || undefined } })
+                    }}>🏎️</button>
+                  <button className="chip bg-brand/20 text-brand" onClick={() => updatePlayer(p.id, { active: p.active === false })}>
+                    {p.active === false ? 'Zurück' : 'DQ'}
+                  </button>
+                  <button className="chip bg-panel border border-line disabled:opacity-25"
+                          disabled={imDuell} onClick={entfernen}
+                          title={imDuell ? 'Steht im laufenden Duell' : 'Spieler löschen'}>🗑</button>
+                </span>
+              </li>
+            )
+          })}
         </ul>
+        <p className="text-white/35 text-xs mt-2">
+          🗑 löscht endgültig – für Doppelanmeldungen. Wer nur zwischendurch raus ist
+          (Klo, Taxi), bekommt DQ und kann zurückgeholt werden.
+        </p>
       </div>
 
       {/* Test-Modus */}
